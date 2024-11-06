@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 9009
+
+logging:
+  level:
+    com.example.springdemo.mapper: debug
