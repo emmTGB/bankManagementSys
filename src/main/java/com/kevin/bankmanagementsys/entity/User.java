@@ -22,9 +22,6 @@ public class User {
     private String password;  // 加密后的密码
 
     @Column(nullable = false)
-    private String role;  // 用户角色（"ADMIN", "CUSTOMER"）
-
-    @Column(nullable = false)
     private String fullName;  // 用户全名
 
     @Column(nullable = false)

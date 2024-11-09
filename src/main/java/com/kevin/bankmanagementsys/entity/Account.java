@@ -29,12 +29,17 @@ public class Account {
     @Column(nullable = false)
     private AccountType accountType;  // 账户类型，使用枚举类型，如储蓄账户，活期账户
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BigDecimal balance = BigDecimal.ZERO;  // 账户余额
+    private AccountStatus status = AccountStatus.ACTIVE;  // 账户状态，默认为有效
+
+    @Column(nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO;  // 账户余额，默认为0
 
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;  // 账户的交易记录
 
-    // Getter 和 Setter 省略
+    public String getAccountNumberWithoutAuth(){
+        return accountNumber.substring(0, 4) + "******" + accountNumber.substring(accountNumber.length() - 4);
+    }
 }
-
