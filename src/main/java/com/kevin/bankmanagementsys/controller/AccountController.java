@@ -1,25 +1,23 @@
 package com.kevin.bankmanagementsys.controller;
 
-/*
-账户管理
-POST /accounts: 开设新账户。
-GET /accounts/{id}: 获取账户信息。
-PUT /accounts/{id}: 更新账户信息（如修改密码）。
-DELETE /accounts/{id}: 删除账户。
-GET /accounts/{id}/transactions: 获取账户交易记录。
- */
-
-import com.kevin.bankmanagementsys.dto.AccountDTO;
-import com.kevin.bankmanagementsys.dto.AuthDTO;
-import com.kevin.bankmanagementsys.dto.CreateAccountRequest;
+import com.kevin.bankmanagementsys.dto.request.AuthDTO;
+import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
+import com.kevin.bankmanagementsys.dto.response.AccountDTO;
+import com.kevin.bankmanagementsys.dto.response.PageDTO;
+import com.kevin.bankmanagementsys.dto.response.TransactionDTO;
+import com.kevin.bankmanagementsys.entity.Transaction;
 import com.kevin.bankmanagementsys.service.AccountService;
 import com.kevin.bankmanagementsys.service.UserService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/account")
@@ -37,7 +35,7 @@ public class AccountController {
 
         try {
             if (!userService.authenticate(authDTO)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
             }
             accountService.create(accountDTO);
             return ResponseEntity.ok("Account created successfully");
@@ -57,14 +55,15 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}/details")
-    public ResponseEntity<AccountDTO> getAccountWithAuth(@PathVariable Long accountId, @RequestBody AuthDTO authDTO, BindingResult bindingResult) {
+    public ResponseEntity<AccountDTO> getAccountWithAuth(@PathVariable Long accountId, @RequestBody AuthDTO authDTO,
+            BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        try{
-            if(!userService.authenticate(authDTO)) {
+        try {
+            if (!userService.authenticate(authDTO)) {
                 ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
             }
             AccountDTO accountDTO = accountService.getAccountWithAuth(accountId);
@@ -73,4 +72,33 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @DeleteMapping("/{accountId}")
+    public ResponseEntity<String> deleteAccount(@PathVariable Long accountId, @RequestBody AuthDTO authDTO,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid authentication.");
+        }
+
+        try {
+            if (!userService.authenticate(authDTO)) {
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Password");
+            }
+            accountService.deleteAccount(accountId);
+            return ResponseEntity.ok("Account deleted successfully.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{accountId}/transactions/{page}")
+    public ResponseEntity<PageDTO<TransactionDTO>>  getTransactions(@PathVariable Long accountId, @PathVariable int page) {
+        try{
+            PageDTO<TransactionDTO> responseBody =  accountService.getTransactions(accountId, page);
+            return ResponseEntity.ok(responseBody);
+        }catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.kevin.bankmanagementsys.dto;
+package com.kevin.bankmanagementsys.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +10,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserDTO {
+public class UserRegisterDTO {
     @NotNull(message = "Username can not be null")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;

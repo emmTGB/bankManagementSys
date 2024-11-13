@@ -1,4 +1,6 @@
-package com.kevin.bankmanagementsys.dto;
+package com.kevin.bankmanagementsys.dto.request;
+
+import com.kevin.bankmanagementsys.dto.response.AccountDTO;
 
 import lombok.Getter;
 import lombok.Setter;

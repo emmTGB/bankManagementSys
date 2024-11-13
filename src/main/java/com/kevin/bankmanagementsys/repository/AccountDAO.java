@@ -9,13 +9,19 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountDAO extends JpaRepository<Account, Integer> {
+    Optional<Long> findAccountIdByAccountNumber(String accountNumber);
+
     Optional<Account> findByAccountNumber(String accountNumber);
 
     Optional<Account> findById(Long id);
+
+    boolean existsById(Long id);
 
     boolean existsByAccountNumber(String accountNumber);
 
     List<Account> findByUser(User user);
 
     List<Account> findByAccountType(AccountType accountType);
+
+    void deleteById(Long id);
 }

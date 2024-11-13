@@ -1,4 +1,4 @@
-package com.kevin.bankmanagementsys.dto;
+package com.kevin.bankmanagementsys.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -8,9 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AuthDTO {
-    @NotNull(message = "User ID can not be null")
-    private Long id;
+public class LoginDTO {
+    @NotNull(message = "Username can not be null")
+    private String username;
 
     @NotNull(message = "Password cannot be null")
     private String password;

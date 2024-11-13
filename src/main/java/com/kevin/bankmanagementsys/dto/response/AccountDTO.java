@@ -1,4 +1,4 @@
-package com.kevin.bankmanagementsys.dto;
+package com.kevin.bankmanagementsys.dto.response;
 
 import lombok.Getter;
 import lombok.Setter;

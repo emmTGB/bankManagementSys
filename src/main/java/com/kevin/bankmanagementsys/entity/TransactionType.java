@@ -1,5 +1,5 @@
 package com.kevin.bankmanagementsys.entity;
 
-enum TransactionType {
+public enum TransactionType {
     DEPOSIT, WITHDRAWAL, TRANSFER
 }

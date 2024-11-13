@@ -2,7 +2,6 @@ package com.kevin.bankmanagementsys.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import org.hibernate.bytecode.internal.bytebuddy.PrivateAccessorException;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -13,8 +12,8 @@ import java.util.Date;
 public class JwtTokenProvider {
     // 你可以更改此密钥
     private static final String SECRET_KEY = "thisIsAVeryLongSecretKeyThatIs256BitsLong12345";
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60*60*1000;
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 7*24*60*60*1000;
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 60*60*1000;  // access 一小时过期
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 7*24*60*60*1000;  // refresh 七天过期，自带续期
 
     private SecretKey getSigningKey() {
         // 使用 Base64 解码，密钥长度应该是 256 位（32 字节）
@@ -32,10 +31,9 @@ public class JwtTokenProvider {
     }
 
     // 生成 Access Token
-    public String createAccessToken(String username, String sessionId) {
+    public String createAccessToken(String username) {
         return Jwts.builder()
                 .subject(username)
-                .claim("sessionId", sessionId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_TIME))
                 .signWith(getSigningKey())
@@ -43,10 +41,9 @@ public class JwtTokenProvider {
     }
 
     // 生成 Refresh Token
-    public String createRefreshToken(String username, String sessionId) {
+    public String createRefreshToken(String username) {
         return Jwts.builder()
                 .subject(username)
-                .claim("sessionId", sessionId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(getSigningKey())
@@ -74,15 +71,5 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getBody()
                     .getSubject();
-    }
-
-    // 从 Token 中获取会话 ID
-    public String getSessionIdFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())  // 使用字节数组密钥
-                .build()
-                .parseSignedClaims(token)
-                .getBody()
-                .get("sessionId", String.class);
     }
 }

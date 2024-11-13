@@ -1,6 +1,8 @@
 package com.kevin.bankmanagementsys.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import java.time.LocalDateTime;
 //交易记录
 
 @Entity
+@Getter
+@Setter
 @Table(name = "transactions")
 public class Transaction {
     @Id
