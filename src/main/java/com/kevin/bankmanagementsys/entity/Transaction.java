@@ -19,12 +19,12 @@ public class Transaction {
     private Long id;  // 主键 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;  // 关联账户
+    @JoinColumn(name = "account_number")
+    private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_account_id", nullable = true)
-    private Account accountReceive;  // 关联接收账户（仅转款时）
+    @JoinColumn(name = "to_account_number")
+    private Account accountReceive;
 
     @Column(nullable = false)
     private BigDecimal amount;  // 交易金额
@@ -36,7 +36,7 @@ public class Transaction {
     @Column(nullable = false)
     private LocalDateTime transactionDate = LocalDateTime.now();  // 交易时间
 
-    @Column(nullable = true)
+    @Column()
     private String description;  // 交易描述（例如转账备注）
 
     // Getter 和 Setter 省略

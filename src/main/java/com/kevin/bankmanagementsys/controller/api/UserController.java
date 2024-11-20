@@ -1,19 +1,11 @@
-package com.kevin.bankmanagementsys.controller;
+package com.kevin.bankmanagementsys.controller.api;
 
-import com.kevin.bankmanagementsys.dto.request.AuthDTO;
-import com.kevin.bankmanagementsys.dto.response.UserInfoDTO;
-
-/*
-用户请求
-POST /users/register: 注册新用户。（弃用，转到auth）
-POST /users/login: 用户登录，生成 JWT 或 Session。(弃用，转到auth)
-GET /users/{id}: 获取用户信息。
-PUT /users/{id}: 更新用户信息（如修改个人资料）。
-DELETE /users/{id}: 删除用户（管理员权限）。
- */
-
-import com.kevin.bankmanagementsys.entity.User;
+import com.kevin.bankmanagementsys.dto.request.AuthRequest;
+import com.kevin.bankmanagementsys.dto.response.AccountResponse;
+import com.kevin.bankmanagementsys.dto.response.PageResponse;
+import com.kevin.bankmanagementsys.dto.response.UserInfoResponse;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
+import com.kevin.bankmanagementsys.service.AccountService;
 import com.kevin.bankmanagementsys.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,11 +20,14 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AccountService accountService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<UserInfoDTO> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<UserInfoResponse> getUser(@PathVariable("id") Long id) {
         try {
-            UserInfoDTO userInfoDTO = userService.getUser(id);
-            return ResponseEntity.ok(userInfoDTO);
+            UserInfoResponse userInfoResponse = userService.getUser(id);
+            return ResponseEntity.ok(userInfoResponse);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (RuntimeException e) {
@@ -41,14 +36,14 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id, @RequestBody AuthDTO authDTO,
+    public ResponseEntity<String> deleteUser(@PathVariable("id") Long id, @RequestBody AuthRequest authRequest,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid authentication.");
         }
 
         try {
-            if (!userService.authenticate(authDTO)) {
+            if (!userService.authenticate(authRequest)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
             }
             userService.deleteUser(id);
@@ -59,4 +54,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
+
+    @GetMapping("/{userId}/accounts/{page}")
+    public ResponseEntity<PageResponse<AccountResponse>> getAccounts(@PathVariable Long userId,
+            @PathVariable int page) {
+        try {
+            PageResponse<AccountResponse> responseBody = accountService.getPageByUserIdAll(userId, page);
+            return ResponseEntity.ok(responseBody);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

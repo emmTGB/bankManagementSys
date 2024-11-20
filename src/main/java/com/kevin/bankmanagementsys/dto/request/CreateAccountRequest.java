@@ -1,13 +1,12 @@
 package com.kevin.bankmanagementsys.dto.request;
 
-import com.kevin.bankmanagementsys.dto.response.AccountDTO;
-
+import com.kevin.bankmanagementsys.dto.response.AccountResponse;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class CreateAccountRequest {
-    private AccountDTO accountDTO;
-    private AuthDTO authDTO;
+    private AccountResponse accountResponse;
+    private AuthRequest authRequest;
 }

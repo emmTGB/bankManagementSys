@@ -1,7 +1,6 @@
 package com.kevin.bankmanagementsys.repository;
 
 import com.kevin.bankmanagementsys.entity.User;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

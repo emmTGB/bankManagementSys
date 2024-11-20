@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Service
 public class SessionBlacklistService {
-    private final Set<String> sessionBlackList = new HashSet<String>();
+    private final Set<String> sessionBlackList = new HashSet<>();
 
     public void addToBlackList(String sessionId) {
         sessionBlackList.add(sessionId);

@@ -36,10 +36,10 @@ public class Loan {
     @Column(nullable = false)
     private LoanStatus loanStatus;  // 贷款状态（待审批、批准、拒绝、完成）
 
-    @Column(nullable = true)
+    @Column()
     private LocalDateTime repaymentStartDate;  // 还款开始日期
 
-    @Column(nullable = true)
+    @Column()
     private BigDecimal totalRepaymentAmount;  // 总还款金额
 
     @OneToMany(mappedBy = "loan")

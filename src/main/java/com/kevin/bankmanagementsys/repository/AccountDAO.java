@@ -3,13 +3,14 @@ package com.kevin.bankmanagementsys.repository;
 import com.kevin.bankmanagementsys.entity.Account;
 import com.kevin.bankmanagementsys.entity.AccountType;
 import com.kevin.bankmanagementsys.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AccountDAO extends JpaRepository<Account, Integer> {
-    Optional<Long> findAccountIdByAccountNumber(String accountNumber);
 
     Optional<Account> findByAccountNumber(String accountNumber);
 
@@ -20,6 +21,8 @@ public interface AccountDAO extends JpaRepository<Account, Integer> {
     boolean existsByAccountNumber(String accountNumber);
 
     List<Account> findByUser(User user);
+
+    Page<Account> findByUser(User user, Pageable pageable);
 
     List<Account> findByAccountType(AccountType accountType);
 

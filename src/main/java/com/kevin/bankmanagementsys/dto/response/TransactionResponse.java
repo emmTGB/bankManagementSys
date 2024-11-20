@@ -1,17 +1,16 @@
 package com.kevin.bankmanagementsys.dto.response;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
 import com.kevin.bankmanagementsys.entity.Transaction;
-
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
-public class TransactionDTO {
-    public TransactionDTO(Transaction transaction) {
+public class TransactionResponse {
+    public TransactionResponse(Transaction transaction) {
         this.id = transaction.getId();
         this.accountNumber = transaction.getAccount().getAccountNumberWithoutAuth();
         this.toAccountNumber = transaction.getAccountReceive() != null

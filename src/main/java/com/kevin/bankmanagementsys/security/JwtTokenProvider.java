@@ -1,6 +1,6 @@
 package com.kevin.bankmanagementsys.security;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +69,7 @@ public class JwtTokenProvider {
                     .verifyWith(getSigningKey())  // 使用字节数组密钥
                     .build()
                     .parseSignedClaims(token)
-                    .getBody()
+                    .getPayload()
                     .getSubject();
     }
 }

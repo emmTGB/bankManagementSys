@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AuthDTO {
+public class AuthRequest {
     @NotNull(message = "User ID can not be null")
     private Long id;
 

@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginDTO {
+public class LoginRequest {
     @NotNull(message = "Username can not be null")
     private String username;
 

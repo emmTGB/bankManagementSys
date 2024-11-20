@@ -13,6 +13,9 @@ spring:
 
 server:
   port: 9009
+  jetty:
+    threads:
+      max: 200
 
 logging:
   level:

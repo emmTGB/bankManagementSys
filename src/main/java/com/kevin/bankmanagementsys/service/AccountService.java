@@ -1,8 +1,7 @@
 package com.kevin.bankmanagementsys.service;
 
-import com.kevin.bankmanagementsys.dto.response.AccountDTO;
-import com.kevin.bankmanagementsys.dto.response.PageDTO;
-import com.kevin.bankmanagementsys.dto.response.TransactionDTO;
+import com.kevin.bankmanagementsys.dto.response.AccountResponse;
+import com.kevin.bankmanagementsys.dto.response.PageResponse;
 import com.kevin.bankmanagementsys.entity.Account;
 import com.kevin.bankmanagementsys.entity.AccountStatus;
 import com.kevin.bankmanagementsys.entity.AccountType;
@@ -12,11 +11,15 @@ import com.kevin.bankmanagementsys.repository.AccountDAO;
 import com.kevin.bankmanagementsys.repository.UserDAO;
 import com.kevin.bankmanagementsys.utils.AccountUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.UserDataHandler;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AccountService {
@@ -26,11 +29,8 @@ public class AccountService {
     @Autowired
     private UserDAO userDAO;
 
-    @Autowired
-    private TransactionService transactionService;
-
-    public Account create(AccountDTO accountDTO) throws RuntimeException {
-        User user = userDAO.findById(accountDTO.getUserId())
+    public void create(AccountResponse accountResponse) throws RuntimeException {
+        User user = userDAO.findById(accountResponse.getUserId())
                 .orElseThrow(UserNotFoundException::new);
 
         String accountNumber;
@@ -46,48 +46,45 @@ public class AccountService {
         Account account = new Account();
         account.setAccountNumber(accountNumber);
         account.setUser(user);
-        account.setAccountType(AccountType.valueOf(accountDTO.getAccountType()));
+        account.setAccountType(AccountType.valueOf(accountResponse.getAccountType()));
         account.setBalance(BigDecimal.ZERO);
         account.setStatus(AccountStatus.ACTIVE);
 
-        return accountDAO.save(account);
+        accountDAO.save(account);
     }
 
-    public AccountDTO getAccount(Long accountId) throws RuntimeException {
+    public AccountResponse getAccount(Long accountId) throws RuntimeException {
         Account account = accountDAO.findById(accountId).orElseThrow(RuntimeException::new);
 
-        AccountDTO accountDTO = new AccountDTO();
-        accountDTO.setUserId(account.getUser().getId());
-        accountDTO.setId(account.getId());
-        accountDTO.setAccountType(account.getAccountType().name());
-        accountDTO.setStatus(account.getStatus().name());
-
-        accountDTO.setAccountNumber(account.getAccountNumberWithoutAuth());
+        AccountResponse accountResponse = new AccountResponse(account);
         // accountDTO.setBalance(account.getBalance());
 
-        return accountDTO;
+        return accountResponse;
     }
 
-    public AccountDTO getAccountWithAuth(Long accountId) throws RuntimeException {
+    public AccountResponse getAccountWithAuth(Long accountId) throws RuntimeException {
         Account account = accountDAO.findById(accountId).orElseThrow(RuntimeException::new); // todo
 
-        AccountDTO accountDTO = new AccountDTO();
-        accountDTO.setUserId(account.getUser().getId());
-        accountDTO.setId(account.getId());
-        accountDTO.setAccountType(account.getAccountType().name());
-        accountDTO.setStatus(account.getStatus().name());
+        AccountResponse accountResponse = new AccountResponse(account);
 
-        accountDTO.setAccountNumber(account.getAccountNumber());
-        accountDTO.setBalance(account.getBalance());
+        accountResponse.setAccountNumber(account.getAccountNumber());
+        accountResponse.setBalance(account.getBalance());
 
-        return accountDTO;
+        return accountResponse;
     }
 
-    public PageDTO<TransactionDTO> getTransactions(Long id, int page) throws RuntimeException {
-        if (!accountDAO.existsById(id))
-            throw new RuntimeException("Account Not Found");
+    public PageResponse<AccountResponse> getPageByUserIdAll(Long userId, int page) throws RuntimeException {
+        User user = userDAO.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
 
-        return transactionService.getPageByAccountIdAll(id, page, TransactionService.TRANSACTION_PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Account> pageAccounts = accountDAO.findByUser(user, pageable);
+        List<Account> accounts = pageAccounts.getContent();
+        List<AccountResponse> accountResponses = accounts.stream().map(AccountResponse::new)
+                .collect(Collectors.toList());
+        return new PageResponse<>(accountResponses,
+                pageAccounts.getNumber(), pageAccounts.getTotalPages(),
+                pageAccounts.getSize(), pageAccounts.getTotalElements());
     }
 
     public void deleteAccount(Long id) throws RuntimeException {

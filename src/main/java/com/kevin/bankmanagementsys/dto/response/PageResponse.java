@@ -1,14 +1,14 @@
 package com.kevin.bankmanagementsys.dto.response;
 
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
-public class PageDTO<T> {
-    public PageDTO(List<T> content, int currentPage, int totalPages, int size, long totalElements) {
+public class PageResponse<T> {
+    public PageResponse(List<T> content, int currentPage, int totalPages, int size, long totalElements) {
         this.content = content;
         this.currentPae = currentPage;
         this.totalPages = totalPages;

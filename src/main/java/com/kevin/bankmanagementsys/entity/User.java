@@ -27,7 +27,7 @@ public class User {
     @Column(nullable = false)
     private String email;  // 用户邮箱
 
-    @Column(nullable = true)
+    @Column()
     private String phone;  // 用户电话
 
     // Getter 和 Setter 省略

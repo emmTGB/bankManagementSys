@@ -69,13 +69,13 @@ public class AccountController {
 
     @GetMapping("/{accountNumber}")
     public ResponseEntity<AccountDTO> getAccount(@PathVariable String accountNumber) {
-        AccountDTO accountDTO = accountService.getAccountByAccountNumber(accountNumber);
-        return ResponseEntity.ok(accountDTO);
+        AccountDTO accountResponse = accountService.getAccountByAccountNumber(accountNumber);
+        return ResponseEntity.ok(accountResponse);
     }
 
     @PostMapping
-    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO accountDTO) {
-        AccountDTO createdAccount = accountService.createAccount(accountDTO);
+    public ResponseEntity<AccountDTO> createAccount(@RequestBody AccountDTO accountResponse) {
+        AccountDTO createdAccount = accountService.createAccount(accountResponse);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAccount);
     }
 }
@@ -100,8 +100,8 @@ public class AccountService {
         return new AccountDTO(account);
     }
 
-    public AccountDTO createAccount(AccountDTO accountDTO) {
-        Account account = new Account(accountDTO);
+    public AccountDTO createAccount(AccountDTO accountResponse) {
+        Account account = new Account(accountResponse);
         account = accountRepository.save(account);
         return new AccountDTO(account);
     }

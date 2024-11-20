@@ -24,7 +24,7 @@ public class RedisSessionService {
 
     public long getRefreshTokenExpiry(String username){
         Long expiry = redisTemplate.getExpire(username, TimeUnit.SECONDS);
-        return expiry == null ? 0 : expiry;
+        return expiry < 0 ? 0 : expiry;
     }
 
     public void invalidateSession(String username){

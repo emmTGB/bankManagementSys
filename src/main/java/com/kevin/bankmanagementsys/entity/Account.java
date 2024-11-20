@@ -1,5 +1,6 @@
 package com.kevin.bankmanagementsys.entity;
 
+import com.kevin.bankmanagementsys.utils.AccountUtils;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,11 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;  // 账户的交易记录
 
+    @Version
+    private Long version;
+
     public String getAccountNumberWithoutAuth(){
-        return accountNumber.substring(0, 4) + "******" + accountNumber.substring(accountNumber.length() - 4);
+        return AccountUtils.getMaskedAccountNumber(accountNumber);
     }
+
 }

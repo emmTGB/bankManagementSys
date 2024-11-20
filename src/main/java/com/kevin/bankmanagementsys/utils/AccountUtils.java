@@ -1,10 +1,11 @@
 package com.kevin.bankmanagementsys.utils;
 
-import com.kevin.bankmanagementsys.repository.AccountDAO;
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class AccountUtils {
     public static final String defaultPrefix = "123";
+
+    public static String getMaskedAccountNumber(String accountNumber){
+        return accountNumber.substring(0, 4) + "******" + accountNumber.substring(accountNumber.length() - 4);
+    }
 
     public static String generateAccountNumber(){
         return generateAccountNumber(defaultPrefix);

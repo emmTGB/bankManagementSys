@@ -1,16 +1,15 @@
 package com.kevin.bankmanagementsys.service;
 
-import com.kevin.bankmanagementsys.dto.request.AuthDTO;
-import com.kevin.bankmanagementsys.dto.request.LoginDTO;
-import com.kevin.bankmanagementsys.dto.request.UserRegisterDTO;
-import com.kevin.bankmanagementsys.dto.response.UserInfoDTO;
+import com.kevin.bankmanagementsys.dto.request.AuthRequest;
+import com.kevin.bankmanagementsys.dto.request.LoginRequest;
+import com.kevin.bankmanagementsys.dto.request.UserRegisterRequest;
+import com.kevin.bankmanagementsys.dto.response.UserInfoResponse;
 import com.kevin.bankmanagementsys.entity.User;
 import com.kevin.bankmanagementsys.exception.user.UserAlreadyExistsException;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.repository.UserDAO;
 import com.kevin.bankmanagementsys.security.JwtTokenProvider;
 import com.kevin.bankmanagementsys.security.RedisSessionService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,26 +31,26 @@ public class UserService {
     @Autowired
     private RedisSessionService redisSessionService;
 
-    public User register(UserRegisterDTO userDTO) throws RuntimeException {
-        if (userDAO.existsByUsername(userDTO.getUsername())) {
+    public void register(UserRegisterRequest registerRequest) throws RuntimeException {
+        if (userDAO.existsByUsername(registerRequest.getUsername())) {
             throw new UserAlreadyExistsException();
         }
 
         User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setEmail(userDTO.getEmail());
-        user.setFullName(userDTO.getFullName());
-        user.setPhone(userDTO.getPhone());
+        user.setUsername(registerRequest.getUsername());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setEmail(registerRequest.getEmail());
+        user.setFullName(registerRequest.getFullName());
+        user.setPhone(registerRequest.getPhone());
 
-        return userDAO.save(user);
+        userDAO.save(user);
     }
 
-    public Map<String, String> login(LoginDTO loginDTO) throws RuntimeException {
-        User user = userDAO.findByUsername(loginDTO.getUsername())
+    public Map<String, String> login(LoginRequest loginRequest) throws RuntimeException {
+        User user = userDAO.findByUsername(loginRequest.getUsername())
                 .orElseThrow(UserNotFoundException::new);
 
-        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
@@ -63,14 +62,15 @@ public class UserService {
         Map<String, String> map = new HashMap<>();
         map.put("accessToken", accessToken);
         map.put("refreshToken", refreshToken);
+        map.put("id", String.valueOf(user.getId()));
         return map;
     }
 
-    public boolean authenticate(AuthDTO authDTO) throws RuntimeException {
-        User user = userDAO.findById(authDTO.getId())
+    public boolean authenticate(AuthRequest authRequest) throws RuntimeException {
+        User user = userDAO.findById(authRequest.getId())
                 .orElseThrow(UserNotFoundException::new);
 
-        return !passwordEncoder.matches(authDTO.getPassword(), user.getPassword());
+        return !passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
     }
 
     public Map<String, String> refresh(String refreshToken) throws RuntimeException {
@@ -83,6 +83,7 @@ public class UserService {
             map.put("accessToken", newAccessToken);
             if (redisSessionService.getRefreshTokenExpiry(username) <= REFRESH_THRESHOLD) { // refresh token即将到期，进行续期
                 String newRefreshToken = jwtTokenProvider.createRefreshToken(username);
+                redisSessionService.saveSession(username, newRefreshToken);
                 map.put("refreshToken", newRefreshToken);
             }
             return map;
@@ -96,12 +97,11 @@ public class UserService {
         redisSessionService.invalidateSession(username);
     }
 
-    public UserInfoDTO getUser(Long id) {
+    public UserInfoResponse getUser(Long id) {
         User user = userDAO.findById(id)
                 .orElseThrow(UserNotFoundException::new);
-        UserInfoDTO userInfoDTO = new UserInfoDTO(user);
 
-        return userInfoDTO;
+        return new UserInfoResponse(user);
     }
 
     public void deleteUser(Long id) throws RuntimeException {
