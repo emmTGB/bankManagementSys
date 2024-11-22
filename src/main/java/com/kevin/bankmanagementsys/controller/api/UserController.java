@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
@@ -56,7 +55,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/accounts/{page}")
-    public ResponseEntity<PageResponse<AccountResponse>> getAccounts(@PathVariable Long userId,
+    public ResponseEntity<PageResponse<AccountResponse>> getAccounts(
+            @PathVariable Long userId,
             @PathVariable int page) {
         try {
             PageResponse<AccountResponse> responseBody = accountService.getPageByUserIdAll(userId, page);

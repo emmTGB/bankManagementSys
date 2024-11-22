@@ -29,16 +29,16 @@ public class AccountController {
     @PostMapping("/create")
     public ResponseEntity<String> createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
         AuthRequest authRequest = createAccountRequest.getAuthRequest();
-        AccountResponse accountResponse = createAccountRequest.getAccountResponse();
 
         try {
             if (!userService.authenticate(authRequest)) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password.");
             }
-            accountService.create(accountResponse);
+            accountService.create(createAccountRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body("Account created successfully");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            System.out.printf(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

@@ -24,7 +24,7 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
+ 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
@@ -40,10 +40,6 @@ public class UserService {
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEmail(registerRequest.getEmail());
-        user.setFullName(registerRequest.getFullName());
-        user.setPhone(registerRequest.getPhone());
-
-        userDAO.save(user);
     }
 
     public Map<String, String> login(LoginRequest loginRequest) throws RuntimeException {
@@ -70,7 +66,7 @@ public class UserService {
         User user = userDAO.findById(authRequest.getId())
                 .orElseThrow(UserNotFoundException::new);
 
-        return !passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
+        return passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
     }
 
     public Map<String, String> refresh(String refreshToken) throws RuntimeException {

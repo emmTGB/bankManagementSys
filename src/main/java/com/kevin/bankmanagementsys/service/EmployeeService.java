@@ -62,4 +62,9 @@ public class EmployeeService {
         Employee employee = employeeDAO.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
         return new EmployeeInfoResponse(employee);
     }
+
+    public void deleteEmployee(Long id) throws RuntimeException {
+        Employee employee = employeeDAO.findById(id).orElseThrow(() -> new RuntimeException("Employee not found"));
+        employeeDAO.delete(employee);
+    }
 }

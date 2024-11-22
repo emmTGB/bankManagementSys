@@ -36,6 +36,7 @@ public class TransactionRequest {
 
     private String description;  // 交易描述（例如转账备注）
 
+    @NotNull(message = "Auth info cannot be null")
     private AuthRequest authRequest;
 }
 

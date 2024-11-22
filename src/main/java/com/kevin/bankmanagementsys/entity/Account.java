@@ -40,8 +40,8 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<Transaction> transactions;  // 账户的交易记录
 
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 
     public String getAccountNumberWithoutAuth(){
         return AccountUtils.getMaskedAccountNumber(accountNumber);

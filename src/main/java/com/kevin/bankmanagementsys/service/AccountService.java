@@ -1,5 +1,6 @@
 package com.kevin.bankmanagementsys.service;
 
+import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
 import com.kevin.bankmanagementsys.dto.response.AccountResponse;
 import com.kevin.bankmanagementsys.dto.response.PageResponse;
 import com.kevin.bankmanagementsys.entity.Account;
@@ -29,8 +30,8 @@ public class AccountService {
     @Autowired
     private UserDAO userDAO;
 
-    public void create(AccountResponse accountResponse) throws RuntimeException {
-        User user = userDAO.findById(accountResponse.getUserId())
+    public void create(CreateAccountRequest createAccountRequest) throws RuntimeException {
+        User user = userDAO.findById(createAccountRequest.getUserId())
                 .orElseThrow(UserNotFoundException::new);
 
         String accountNumber;
@@ -41,12 +42,12 @@ public class AccountService {
             if (entry > 5) {
                 throw new RuntimeException("Can not generate account number");
             }
-        } while (!accountDAO.existsByAccountNumber(accountNumber));
+        } while (accountDAO.existsByAccountNumber(accountNumber));
 
         Account account = new Account();
         account.setAccountNumber(accountNumber);
         account.setUser(user);
-        account.setAccountType(AccountType.valueOf(accountResponse.getAccountType()));
+        account.setAccountType(AccountType.valueOf(createAccountRequest.getAccountType()));
         account.setBalance(BigDecimal.ZERO);
         account.setStatus(AccountStatus.ACTIVE);
 
