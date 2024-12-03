@@ -8,6 +8,7 @@ import com.kevin.bankmanagementsys.entity.Transaction;
 import com.kevin.bankmanagementsys.entity.TransactionType;
 import com.kevin.bankmanagementsys.repository.AccountDAO;
 import com.kevin.bankmanagementsys.repository.TransactionDAO;
+import io.lettuce.core.output.ScanOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -76,7 +77,7 @@ public class TransactionService {
 
     public void withdrawal(TransactionRequest transactionRequest) throws RuntimeException {
         TransactionType transactionType = TransactionType.valueOf(transactionRequest.getTransactionType());
-        if (transactionType != TransactionType.WITHDRAWAL) {
+        if (transactionType != TransactionType.WITHDRAW) {
             throw new RuntimeException("TransactionType not supported");
         }
 
@@ -84,8 +85,7 @@ public class TransactionService {
                 .orElseThrow(RuntimeException::new);
         BigDecimal amount = transactionRequest.getAmount();
         account.setBalance(account.getBalance().subtract(amount));
-        accountDAO.save(account); // 乐观锁保存
-        // todo
+        accountDAO.save(account);
 
         transactionDAO.save(buildTransaction(transactionRequest, account, null));
     }
@@ -103,9 +103,11 @@ public class TransactionService {
                 .orElseThrow(RuntimeException::new);
         account.setBalance(account.getBalance().subtract(amount));
         accountReceive.setBalance(accountReceive.getBalance().add(amount));
+        Transaction transaction = buildTransaction(transactionRequest, account, accountReceive);
+        transactionDAO.save(transaction);
+
         accountDAO.save(account);
         accountDAO.save(accountReceive);
 
-        transactionDAO.save(buildTransaction(transactionRequest, account, accountReceive));
     }
 }

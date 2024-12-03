@@ -4,6 +4,7 @@ import com.kevin.bankmanagementsys.dto.request.AuthRequest;
 import com.kevin.bankmanagementsys.dto.request.TransactionRequest;
 import com.kevin.bankmanagementsys.service.TransactionService;
 import com.kevin.bankmanagementsys.service.UserService;
+import io.lettuce.core.output.ScanOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.View;
 
 @RestController
 @RequestMapping("/api/transaction")
@@ -23,6 +25,8 @@ public class TransactionController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private View error;
 
     private ResponseEntity<String> processTransaction(TransactionRequest transactionRequest, BindingResult bindingResult){
         if(bindingResult.hasErrors()){

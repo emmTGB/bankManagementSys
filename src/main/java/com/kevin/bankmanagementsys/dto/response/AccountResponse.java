@@ -30,6 +30,9 @@ public class AccountResponse {
     @Pattern(regexp = "ACTIVE|FROZEN|CLOSED", message = "Invalid account status")
     private String status;
 
+    @NotNull(message = "Bank name cannot be null")
+    private String bankName;
+
     private BigDecimal balance;
 
     // 如果您需要返回交易记录的话可以添加，但一般情况下会避免返回大量的关联数据
@@ -37,8 +40,9 @@ public class AccountResponse {
         this.id = account.getId();
         this.accountNumber = account.getAccountNumberWithoutAuth();
         this.accountType = account.getAccountType().name();
-        this.balance = null;
+        this.balance = account.getBalance();
         this.status = account.getStatus().name();
         this.userId = account.getUser().getId();
+        this.bankName = account.getBankName().name();
     }
 }

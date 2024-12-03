@@ -53,18 +53,19 @@ public class AccountController {
     }
 
     @GetMapping("/{accountId}/details")
-    public ResponseEntity<AccountResponse> getAccountWithAuth(@PathVariable Long accountId,
-            @RequestBody AuthRequest authRequest,
-            BindingResult bindingResult) {
+    public ResponseEntity<AccountResponse> getAccountWithAuth(@PathVariable Long accountId
+//            @RequestBody AuthRequest authRequest,
+//            BindingResult bindingResult
+    ) {
 
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+//        if (bindingResult.hasErrors()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+//        }
 
         try {
-            if (!userService.authenticate(authRequest)) {
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-            }
+//            if (!userService.authenticate(authRequest)) {
+//                ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+//            }
             AccountResponse accountResponse = accountService.getAccountWithAuth(accountId);
             return ResponseEntity.ok(accountResponse);
         } catch (RuntimeException e) {

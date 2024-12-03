@@ -4,7 +4,7 @@ public class AccountUtils {
     public static final String defaultPrefix = "123";
 
     public static String getMaskedAccountNumber(String accountNumber){
-        return accountNumber.substring(0, 4) + "******" + accountNumber.substring(accountNumber.length() - 4);
+        return accountNumber.substring(0, 4) + " **** **** " + accountNumber.substring(accountNumber.length() - 4);
     }
 
     public static String generateAccountNumber(){

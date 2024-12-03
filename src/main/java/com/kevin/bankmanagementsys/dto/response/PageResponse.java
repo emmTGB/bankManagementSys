@@ -10,14 +10,14 @@ import java.util.List;
 public class PageResponse<T> {
     public PageResponse(List<T> content, int currentPage, int totalPages, int size, long totalElements) {
         this.content = content;
-        this.currentPae = currentPage;
+        this.currentPage = currentPage;
         this.totalPages = totalPages;
         this.size = size;
         this.totalElements = totalElements;
     }
 
     List<T> content;
-    int currentPae;
+    int currentPage;
     int totalPages;
     int size;
     long totalElements;

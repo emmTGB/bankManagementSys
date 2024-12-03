@@ -68,7 +68,10 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:4200");
+        config.addAllowedOrigin("http://10.85.21.73:4200");
+        config.addAllowedOrigin("http://10.79.233.200:4200");
         config.addAllowedHeader("*");
+        config.addAllowedHeader("Refresh-Token");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of(
                 "Access-Token",

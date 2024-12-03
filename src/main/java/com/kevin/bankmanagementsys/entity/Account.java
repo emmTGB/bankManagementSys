@@ -23,12 +23,16 @@ public class Account {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;  // 账户所属用户（关联用户表）
 
-    @Column(nullable = false)
+    @Column(name = "account_number", unique = true, nullable = false)
     private String accountNumber;  // 账户号码，唯一
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AccountType accountType;  // 账户类型，使用枚举类型，如储蓄账户，活期账户
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BankName bankName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

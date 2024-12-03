@@ -25,7 +25,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 3600000))  // 设置 1 小时过期时间
+                .expiration(new Date(System.currentTimeMillis() + 24 * 3600000))  // 设置 24 小时过期时间
                 .signWith(getSigningKey())
                 .compact();
     }

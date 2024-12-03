@@ -2,11 +2,10 @@ package com.kevin.bankmanagementsys.service;
 
 import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
 import com.kevin.bankmanagementsys.dto.response.AccountResponse;
+import com.kevin.bankmanagementsys.dto.response.ListItem;
+import com.kevin.bankmanagementsys.dto.response.ListResponse;
 import com.kevin.bankmanagementsys.dto.response.PageResponse;
-import com.kevin.bankmanagementsys.entity.Account;
-import com.kevin.bankmanagementsys.entity.AccountStatus;
-import com.kevin.bankmanagementsys.entity.AccountType;
-import com.kevin.bankmanagementsys.entity.User;
+import com.kevin.bankmanagementsys.entity.*;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.repository.AccountDAO;
 import com.kevin.bankmanagementsys.repository.UserDAO;
@@ -19,7 +18,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +52,7 @@ public class AccountService {
         account.setAccountType(AccountType.valueOf(createAccountRequest.getAccountType()));
         account.setBalance(BigDecimal.ZERO);
         account.setStatus(AccountStatus.ACTIVE);
+        account.setBankName(BankName.valueOf(createAccountRequest.getBankName()));
 
         accountDAO.save(account);
     }
@@ -92,5 +95,19 @@ public class AccountService {
         if (accountDAO.existsById(id))
             accountDAO.deleteById(id);
         throw new RuntimeException("Account Not Found");
+    }
+
+    public ListResponse<ListItem> getListByUserId(Long userId) throws RuntimeException {
+        User user = userDAO.findById(userId).orElseThrow(UserNotFoundException::new);
+        List<Account> accounts = accountDAO.findByUser(user);
+
+        ListResponse<ListItem> response = new ListResponse<>();
+        List<ListItem> list = new ArrayList<>();
+        for(Account account : accounts){
+            list.add(new ListItem(account.getId(), account.getAccountNumberWithoutAuth()));
+        }
+        response.setContent(list);
+        response.setTotal(accounts.size());
+        return response;
     }
 }

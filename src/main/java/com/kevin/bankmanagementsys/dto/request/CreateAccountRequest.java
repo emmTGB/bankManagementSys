@@ -21,4 +21,8 @@ public class CreateAccountRequest {
 
     @NotNull(message = "Auth info cannot be null")
     private AuthRequest authRequest;
+
+    @NotNull(message = "Bank name cannot be null")
+    private String bankName;
+
 }

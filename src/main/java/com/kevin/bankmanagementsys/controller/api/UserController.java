@@ -1,9 +1,7 @@
 package com.kevin.bankmanagementsys.controller.api;
 
 import com.kevin.bankmanagementsys.dto.request.AuthRequest;
-import com.kevin.bankmanagementsys.dto.response.AccountResponse;
-import com.kevin.bankmanagementsys.dto.response.PageResponse;
-import com.kevin.bankmanagementsys.dto.response.UserInfoResponse;
+import com.kevin.bankmanagementsys.dto.response.*;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.service.AccountService;
 import com.kevin.bankmanagementsys.service.UserService;
@@ -12,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -66,4 +67,14 @@ public class UserController {
         }
     }
 
+    @GetMapping("/{userId}/accounts/list")
+    public ResponseEntity<ListResponse<ListItem>> getAccountsList(
+            @PathVariable Long userId) {
+        try {
+            ListResponse<ListItem> response = accountService.getListByUserId(userId);
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }

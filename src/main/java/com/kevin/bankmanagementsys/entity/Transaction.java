@@ -19,11 +19,11 @@ public class Transaction {
     private Long id;  // 主键 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_number")
+    @JoinColumn(name = "account_number", referencedColumnName = "account_number")
     private Account account;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "to_account_number")
+    @JoinColumn(name = "to_account_number", referencedColumnName = "account_number")
     private Account accountReceive;
 
     @Column(nullable = false)

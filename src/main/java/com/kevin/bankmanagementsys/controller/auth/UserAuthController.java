@@ -33,6 +33,7 @@ public class UserAuthController {
         }
 
         try {
+            System.out.println(1);
             userService.register(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
         } catch (RuntimeException e) {

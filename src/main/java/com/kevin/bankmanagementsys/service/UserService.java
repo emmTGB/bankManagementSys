@@ -39,7 +39,11 @@ public class UserService {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setFullName(registerRequest.getFullName());
         user.setEmail(registerRequest.getEmail());
+        user.setPhone(registerRequest.getPhone());
+
+        userDAO.save(user);
     }
 
     public Map<String, String> login(LoginRequest loginRequest) throws RuntimeException {
