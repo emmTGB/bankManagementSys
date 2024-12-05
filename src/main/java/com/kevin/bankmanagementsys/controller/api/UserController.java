@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +39,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable("id") Long id, @RequestBody AuthRequest authRequest,
             BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid authentication.");
+        if(bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(
+                    bindingResult.getAllErrors().stream()
+                            .map(ObjectError::getDefaultMessage)
+                            .reduce((msg1, msg2) -> msg1 + ";\n" + msg2)
+                            .orElse("Invalid request data"));
         }
 
         try {
@@ -68,10 +73,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/accounts/list")
-    public ResponseEntity<ListResponse<ListItem>> getAccountsList(
+    public ResponseEntity<ListResponse<AccListItem>> getAccountsList(
             @PathVariable Long userId) {
         try {
-            ListResponse<ListItem> response = accountService.getListByUserId(userId);
+            ListResponse<AccListItem> response = accountService.getListByUserId(userId);
             return ResponseEntity.ok(response);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

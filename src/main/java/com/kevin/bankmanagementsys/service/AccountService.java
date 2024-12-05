@@ -2,7 +2,7 @@ package com.kevin.bankmanagementsys.service;
 
 import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
 import com.kevin.bankmanagementsys.dto.response.AccountResponse;
-import com.kevin.bankmanagementsys.dto.response.ListItem;
+import com.kevin.bankmanagementsys.dto.response.AccListItem;
 import com.kevin.bankmanagementsys.dto.response.ListResponse;
 import com.kevin.bankmanagementsys.dto.response.PageResponse;
 import com.kevin.bankmanagementsys.entity.*;
@@ -82,7 +82,7 @@ public class AccountService {
                 .orElseThrow(UserNotFoundException::new);
 
         Pageable pageable = PageRequest.of(page, 5, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Account> pageAccounts = accountDAO.findByUser(user, pageable);
+        Page<Account> pageAccounts = accountDAO.findByUserAndStatusNot(user, AccountStatus.CLOSED, pageable);
         List<Account> accounts = pageAccounts.getContent();
         List<AccountResponse> accountResponses = accounts.stream().map(AccountResponse::new)
                 .collect(Collectors.toList());
@@ -97,14 +97,14 @@ public class AccountService {
         throw new RuntimeException("Account Not Found");
     }
 
-    public ListResponse<ListItem> getListByUserId(Long userId) throws RuntimeException {
+    public ListResponse<AccListItem> getListByUserId(Long userId) throws RuntimeException {
         User user = userDAO.findById(userId).orElseThrow(UserNotFoundException::new);
         List<Account> accounts = accountDAO.findByUser(user);
 
-        ListResponse<ListItem> response = new ListResponse<>();
-        List<ListItem> list = new ArrayList<>();
-        for(Account account : accounts){
-            list.add(new ListItem(account.getId(), account.getAccountNumberWithoutAuth()));
+        ListResponse<AccListItem> response = new ListResponse<>();
+        List<AccListItem> list = new ArrayList<>();
+        for (Account account : accounts) {
+            list.add(new AccListItem(account.getId(), account.getAccountNumberWithoutAuth(), account.getBankName()));
         }
         response.setContent(list);
         response.setTotal(accounts.size());

@@ -25,4 +25,5 @@ public class CreateAccountRequest {
     @NotNull(message = "Bank name cannot be null")
     private String bankName;
 
+
 }

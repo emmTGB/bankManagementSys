@@ -4,7 +4,6 @@ import com.kevin.bankmanagementsys.dto.request.AuthRequest;
 import com.kevin.bankmanagementsys.dto.request.TransactionRequest;
 import com.kevin.bankmanagementsys.service.TransactionService;
 import com.kevin.bankmanagementsys.service.UserService;
-import io.lettuce.core.output.ScanOutput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

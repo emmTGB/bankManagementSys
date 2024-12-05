@@ -10,6 +10,7 @@ spring:
       host: localhost
       port: 6379
       connect-timeout: 5000
+      database: 0
 
 server:
   port: 9009
@@ -19,4 +20,4 @@ server:
 
 logging:
   level:
-    com.example.springdemo.mapper: debug
+    com.kevin.bankmanagementsys.BankManagementSysApplication: debug

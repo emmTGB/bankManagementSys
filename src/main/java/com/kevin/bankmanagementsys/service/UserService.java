@@ -10,6 +10,7 @@ import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.repository.UserDAO;
 import com.kevin.bankmanagementsys.security.JwtTokenProvider;
 import com.kevin.bankmanagementsys.security.RedisSessionService;
+import com.kevin.bankmanagementsys.security.SessionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class UserService {
         String accessToken = jwtTokenProvider.createAccessToken(user.getUsername());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
 
-        redisSessionService.saveSession(user.getUsername(), refreshToken);
+        redisSessionService.saveSession(user.getUsername(), refreshToken, SessionType.USER);
 
         Map<String, String> map = new HashMap<>();
         map.put("accessToken", accessToken);
@@ -77,13 +78,13 @@ public class UserService {
         final long REFRESH_THRESHOLD = 5 * 24 * 60 * 60;
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
 
-        if (redisSessionService.validateRefreshToken(username, refreshToken)) { // 验证refresh token是否过期
+        if (redisSessionService.validateRefreshToken(username, refreshToken, SessionType.USER)) { // 验证refresh token是否过期
             String newAccessToken = jwtTokenProvider.createAccessToken(username);
             Map<String, String> map = new HashMap<>();
             map.put("accessToken", newAccessToken);
-            if (redisSessionService.getRefreshTokenExpiry(username) <= REFRESH_THRESHOLD) { // refresh token即将到期，进行续期
+            if (redisSessionService.getRefreshTokenExpiry(username, SessionType.USER) <= REFRESH_THRESHOLD) { // refresh token即将到期，进行续期
                 String newRefreshToken = jwtTokenProvider.createRefreshToken(username);
-                redisSessionService.saveSession(username, newRefreshToken);
+                redisSessionService.saveSession(username, newRefreshToken, SessionType.USER);
                 map.put("refreshToken", newRefreshToken);
             }
             return map;
@@ -94,7 +95,7 @@ public class UserService {
 
     public void logout(String refreshToken) throws RuntimeException {
         String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
-        redisSessionService.invalidateSession(username);
+        redisSessionService.invalidateSession(username, SessionType.USER);
     }
 
     public UserInfoResponse getUser(Long id) {

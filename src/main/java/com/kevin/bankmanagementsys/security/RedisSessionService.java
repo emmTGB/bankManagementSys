@@ -13,21 +13,25 @@ public class RedisSessionService {
 
     private static final long REFRESH_TOKEN_EXPIRY = 7 * 24 * 60 * 60;
 
-    public void saveSession(String username, String refreshToken){
-        redisTemplate.opsForValue().set(username, refreshToken, REFRESH_TOKEN_EXPIRY, TimeUnit.SECONDS);
+    private static String concatSessionKey(String username, SessionType sessionType){
+        return sessionType.name() + '_' +username;
     }
 
-    public boolean validateRefreshToken(String username, String refreshToken){
-        String storedToken = redisTemplate.opsForValue().get(username);
+    public void saveSession(String username, String refreshToken, SessionType sessionType){
+        redisTemplate.opsForValue().set(concatSessionKey(username, sessionType), refreshToken, REFRESH_TOKEN_EXPIRY, TimeUnit.SECONDS);
+    }
+
+    public boolean validateRefreshToken(String username, String refreshToken, SessionType sessionType){
+        String storedToken = redisTemplate.opsForValue().get(concatSessionKey(username, sessionType));
         return storedToken != null && storedToken.equals(refreshToken);
     }
 
-    public long getRefreshTokenExpiry(String username){
-        Long expiry = redisTemplate.getExpire(username, TimeUnit.SECONDS);
+    public long getRefreshTokenExpiry(String username, SessionType sessionType){
+        Long expiry = redisTemplate.getExpire(concatSessionKey(username, sessionType), TimeUnit.SECONDS);
         return expiry < 0 ? 0 : expiry;
     }
 
-    public void invalidateSession(String username){
-        redisTemplate.delete(username);
+    public void invalidateSession(String username, SessionType sessionType){
+        redisTemplate.delete(concatSessionKey(username, sessionType));
     }
 }
