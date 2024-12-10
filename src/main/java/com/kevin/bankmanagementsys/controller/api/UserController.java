@@ -1,10 +1,12 @@
 package com.kevin.bankmanagementsys.controller.api;
 
 import com.kevin.bankmanagementsys.dto.request.AuthRequest;
+import com.kevin.bankmanagementsys.dto.request.UserUpdateRequest;
 import com.kevin.bankmanagementsys.dto.response.*;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.service.AccountService;
 import com.kevin.bankmanagementsys.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,22 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PostMapping("/update/{id}")
+    public ResponseEntity<String> update(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessages = new StringBuilder();
+            bindingResult.getAllErrors().forEach(error -> errorMessages.append(error.getDefaultMessage()).append("\n"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessages.toString());
+        }
+
+        try{
+            userService.update(id, request);
+            return ResponseEntity.ok("User updated successfully.");
+        }catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 

@@ -34,9 +34,14 @@ public class UserAuthController {
 
         try {
             System.out.println(1);
-            userService.register(userDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+            Map<String, String> tokens = userService.register(userDTO);
+            return ResponseEntity.ok()
+                    .header("Access-Token", tokens.get("accessToken"))
+                    .header("Refresh-Token", tokens.get("refreshToken"))
+                    .header("ID", tokens.get("id"))
+                    .body("Login successful");
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage()); // todo 仍需细分 如conflict
         }
     }

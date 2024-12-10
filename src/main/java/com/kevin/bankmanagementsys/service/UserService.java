@@ -3,6 +3,7 @@ package com.kevin.bankmanagementsys.service;
 import com.kevin.bankmanagementsys.dto.request.AuthRequest;
 import com.kevin.bankmanagementsys.dto.request.LoginRequest;
 import com.kevin.bankmanagementsys.dto.request.UserRegisterRequest;
+import com.kevin.bankmanagementsys.dto.request.UserUpdateRequest;
 import com.kevin.bankmanagementsys.dto.response.UserInfoResponse;
 import com.kevin.bankmanagementsys.entity.User;
 import com.kevin.bankmanagementsys.exception.user.UserAlreadyExistsException;
@@ -32,7 +33,7 @@ public class UserService {
     @Autowired
     private RedisSessionService redisSessionService;
 
-    public void register(UserRegisterRequest registerRequest) throws RuntimeException {
+    public Map<String, String> register(UserRegisterRequest registerRequest) throws RuntimeException {
         if (userDAO.existsByUsername(registerRequest.getUsername())) {
             throw new UserAlreadyExistsException();
         }
@@ -44,7 +45,18 @@ public class UserService {
         user.setEmail(registerRequest.getEmail());
         user.setPhone(registerRequest.getPhone());
 
-        userDAO.save(user);
+        Long id = userDAO.save(user).getId();
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getUsername());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
+
+        redisSessionService.saveSession(user.getUsername(), refreshToken, SessionType.USER);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("accessToken", accessToken);
+        map.put("refreshToken", refreshToken);
+        map.put("id", String.valueOf(id));
+        return map;
     }
 
     public Map<String, String> login(LoginRequest loginRequest) throws RuntimeException {
@@ -65,6 +77,21 @@ public class UserService {
         map.put("refreshToken", refreshToken);
         map.put("id", String.valueOf(user.getId()));
         return map;
+    }
+
+    public void update(Long id, UserUpdateRequest request) throws RuntimeException {
+        User user = userDAO.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        userDAO.save(user);
     }
 
     public boolean authenticate(AuthRequest authRequest) throws RuntimeException {

@@ -60,10 +60,9 @@ public class AccountService {
     public AccountResponse getAccount(Long accountId) throws RuntimeException {
         Account account = accountDAO.findById(accountId).orElseThrow(RuntimeException::new);
 
-        AccountResponse accountResponse = new AccountResponse(account);
         // accountDTO.setBalance(account.getBalance());
 
-        return accountResponse;
+        return new AccountResponse(account);
     }
 
     public AccountResponse getAccountWithAuth(Long accountId) throws RuntimeException {
