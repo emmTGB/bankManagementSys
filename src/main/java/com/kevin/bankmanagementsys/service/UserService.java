@@ -26,7 +26,7 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
- 
+
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
