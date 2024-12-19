@@ -3,6 +3,7 @@ package com.kevin.bankmanagementsys.controller.auth;
 import com.kevin.bankmanagementsys.dto.request.AuthRequest;
 import com.kevin.bankmanagementsys.dto.request.LoginRequest;
 import com.kevin.bankmanagementsys.dto.request.UserRegisterRequest;
+import com.kevin.bankmanagementsys.exception.user.UserAlreadyExistsException;
 import com.kevin.bankmanagementsys.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -40,9 +42,13 @@ public class UserAuthController {
                     .header("Refresh-Token", tokens.get("refreshToken"))
                     .header("ID", tokens.get("id"))
                     .body("Login successful");
-        } catch (RuntimeException e) {
+        }catch (UserAlreadyExistsException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("用户已存在"); // todo 仍需细分 如conflict
+        }catch (DataIntegrityViolationException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("某字段已存在"); // todo 仍需细分 如conflict
+        }catch (RuntimeException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage()); // todo 仍需细分 如conflict
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("服务器错误：" + e.getMessage()); // todo 仍需细分 如conflict
         }
     }
 
