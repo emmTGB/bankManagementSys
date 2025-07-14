@@ -110,17 +110,6 @@ public class UserAuthController {
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(
-            @Parameter(description = "用户的刷新令牌", required = true)
-            @RequestHeader(name = "Refresh-Token") String refreshToken) {
-        if (refreshToken == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing Refresh-Token");
-        }
-        userService.logout(refreshToken);
-        return ResponseEntity.status(HttpStatus.OK).body("Logout successfully");
-    }
-
     @PostMapping("/verify")
     public ResponseEntity<String> verify(@RequestBody AuthRequest authRequest, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){

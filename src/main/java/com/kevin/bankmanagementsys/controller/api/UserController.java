@@ -6,6 +6,7 @@ import com.kevin.bankmanagementsys.dto.response.*;
 import com.kevin.bankmanagementsys.exception.user.UserNotFoundException;
 import com.kevin.bankmanagementsys.service.AccountService;
 import com.kevin.bankmanagementsys.service.UserService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -99,5 +100,16 @@ public class UserController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(
+            @Parameter(description = "用户的刷新令牌", required = true)
+            @RequestHeader(name = "Refresh-Token") String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing Refresh-Token");
+        }
+        userService.logout(refreshToken);
+        return ResponseEntity.status(HttpStatus.OK).body("Logout successfully");
     }
 }

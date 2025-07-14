@@ -87,7 +87,7 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());

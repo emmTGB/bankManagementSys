@@ -1,5 +1,7 @@
 package com.kevin.bankmanagementsys.controller.api;
 
+import ch.qos.logback.core.status.Status;
+import com.kevin.bankmanagementsys.dto.request.AccountStatusRequest;
 import com.kevin.bankmanagementsys.dto.request.AuthRequest;
 import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
 import com.kevin.bankmanagementsys.dto.response.AccountResponse;
@@ -108,4 +110,13 @@ public class AccountController {
         }
     }
 
+    @PostMapping("/status")
+    public ResponseEntity<String> updateStatus( @RequestBody AccountStatusRequest request) {
+        try {
+            accountService.updateStatus(request);
+            return ResponseEntity.status(HttpStatus.OK).body("Success");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

@@ -53,7 +53,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/auth/user/login", "/auth/user/register", "/auth/user/refresh").permitAll()
-                        .requestMatchers("/auth/employee/login", "/auth/employee/register").permitAll()
+                        .requestMatchers("/api/employee/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
@@ -71,7 +71,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://10.85.21.73:4200");
         config.addAllowedOrigin("http://10.79.233.200:4200");
         config.addAllowedHeader("*");
-        config.addAllowedHeader("Refresh-Token");
+//        config.addAllowedHeader("Refresh-Token");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of(
                 "Access-Token",

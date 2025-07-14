@@ -24,8 +24,6 @@ public class TransactionController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private View error;
 
     private ResponseEntity<String> processTransaction(TransactionRequest transactionRequest, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
@@ -65,7 +63,7 @@ public class TransactionController {
         }
     }
 
-    @PostMapping("/withdrawal")
+    @PostMapping("/withdraw")
     public ResponseEntity<String> withdrawal(@RequestBody TransactionRequest transactionRequest, BindingResult bindingResult){
         ResponseEntity<String> result = processTransaction(transactionRequest, bindingResult);
         if(result != null){

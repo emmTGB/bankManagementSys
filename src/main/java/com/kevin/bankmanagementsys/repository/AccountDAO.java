@@ -35,6 +35,8 @@ public interface AccountDAO extends JpaRepository<Account, Integer> {
 
     Page<Account> findByUserAndStatusNot(User user, AccountStatus status, Pageable pageable);
 
+    List<Account> findAllByStatusNot(AccountStatus status);
+
     List<Account> findByAccountType(AccountType accountType);
 
     void deleteById(Long id);

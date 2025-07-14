@@ -1,5 +1,6 @@
 package com.kevin.bankmanagementsys.service;
 
+import com.kevin.bankmanagementsys.dto.request.AccountStatusRequest;
 import com.kevin.bankmanagementsys.dto.request.CreateAccountRequest;
 import com.kevin.bankmanagementsys.dto.response.AccountResponse;
 import com.kevin.bankmanagementsys.dto.response.AccListItem;
@@ -19,9 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -108,5 +107,22 @@ public class AccountService {
         response.setContent(list);
         response.setTotal(accounts.size());
         return response;
+    }
+
+    public List<AccountResponse> getAll() throws RuntimeException {
+        List<Account> accounts = accountDAO.findAllByStatusNot(AccountStatus.CLOSED);
+        List<AccountResponse> accountResponses = new ArrayList<>();
+        for (Account account : accounts) {
+            AccountResponse ar = new AccountResponse(account);
+            ar.setAccountNumber(account.getAccountNumber());
+            accountResponses.add(ar);
+        }
+        return accountResponses;
+    }
+
+    public void updateStatus(AccountStatusRequest request) throws RuntimeException {
+        Account account = accountDAO.findById(request.getAccountId()).orElseThrow(() -> new RuntimeException("Account Not Found"));
+        account.setStatus(AccountStatus.valueOf(request.getAccountStatus()));
+        accountDAO.save(account);
     }
 }
